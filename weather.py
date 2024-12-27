@@ -23,7 +23,12 @@ def get_weather_data(lat, lon):
             "temperature": round(data["current"]["temp_c"]),
             "humidity": data["current"]["humidity"],
             "description": data["current"]["condition"]["text"],
-            "uv_index": data["current"]["uv"]
+            "uv_index": data["current"]["uv"],
+            "location": {
+                "city": data["location"]["name"],
+                "region": data["location"]["region"],
+                "country": data["location"]["country"]
+            }
         }
     except Exception as e:
         current_app.logger.error(f"Weather API error: {str(e)}")
