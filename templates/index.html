@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Personalized Skincare Routine</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('recommend') }}" method="POST">
+                    <input type="hidden" name="latitude" id="latitude">
+                    <input type="hidden" name="longitude" id="longitude">
+
+                    <div class="mb-4">
+                        <label class="form-label">What's your skin type?</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="skin_type" value="oily" id="type-oily" required>
+                                <label class="form-check-label" for="type-oily">Oily</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="skin_type" value="dry" id="type-dry">
+                                <label class="form-check-label" for="type-dry">Dry</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="skin_type" value="combination" id="type-combination">
+                                <label class="form-check-label" for="type-combination">Combination</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="skin_type" value="normal" id="type-normal">
+                                <label class="form-check-label" for="type-normal">Normal</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Is your skin sensitive?</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sensitivity" value="sensitive" id="sensitive-yes" required>
+                                <label class="form-check-label" for="sensitive-yes">Yes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sensitivity" value="not-sensitive" id="sensitive-no">
+                                <label class="form-check-label" for="sensitive-no">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">What are your skin concerns? (Select all that apply)</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="concerns" value="acne" id="concern-acne">
+                                <label class="form-check-label" for="concern-acne">Acne</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="concerns" value="aging" id="concern-aging">
+                                <label class="form-check-label" for="concern-aging">Aging</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="concerns" value="pigmentation" id="concern-pigmentation">
+                                <label class="form-check-label" for="concern-pigmentation">Pigmentation</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="concerns" value="dryness" id="concern-dryness">
+                                <label class="form-check-label" for="concern-dryness">Dryness</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div id="location-status" class="alert alert-info">
+                            Detecting your location...
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
+                        Get Recommendations
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/location.js') }}"></script>
+{% endblock %}

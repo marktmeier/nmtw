@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">Current Weather Conditions</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p><i class="bi bi-thermometer-half"></i> Temperature: {{ weather.temperature }}°C</p>
+                        <p><i class="bi bi-moisture"></i> Humidity: {{ weather.humidity }}%</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p><i class="bi bi-sun"></i> UV Index: {{ weather.uv_index if weather.uv_index else 'N/A' }}</p>
+                        <p><i class="bi bi-cloud"></i> Conditions: {{ weather.description|title }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Your Personalized Routine</h3>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for item in routine %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {% if item.step == "Cleanse" %}
+                                <i class="bi bi-droplet"></i>
+                                {% elif item.step == "Tone" %}
+                                <i class="bi bi-moisture"></i>
+                                {% elif item.step == "Treat" %}
+                                <i class="bi bi-magic"></i>
+                                {% elif item.step == "Moisturize" %}
+                                <i class="bi bi-flower1"></i>
+                                {% elif item.step == "Protect" %}
+                                <i class="bi bi-shield-check"></i>
+                                {% endif %}
+                                Step {{ loop.index }}: {{ item.step }}
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ item.product }}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i> {{ item.reason }}
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Start Over
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
