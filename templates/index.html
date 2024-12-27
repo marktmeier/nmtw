@@ -5,80 +5,116 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h3 class="mb-0">Personalized Skincare Routine</h3>
+                <h3 class="mb-0">Skin Type Quiz</h3>
+                <div class="progress mt-2" style="height: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
             </div>
             <div class="card-body">
-                <form action="{{ url_for('recommend') }}" method="POST">
+                <form id="skinQuizForm" action="{{ url_for('recommend') }}" method="POST">
                     <input type="hidden" name="latitude" id="latitude">
                     <input type="hidden" name="longitude" id="longitude">
 
-                    <div class="mb-4">
-                        <label class="form-label">What's your skin type?</label>
-                        <div class="d-flex gap-3">
+                    <!-- Step 1: Skin Type -->
+                    <div class="quiz-step" data-step="1">
+                        <h4>How does your skin feel after cleansing?</h4>
+                        <div class="d-flex flex-column gap-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="skin_type" value="oily" id="type-oily" required>
-                                <label class="form-check-label" for="type-oily">Oily</label>
+                                <label class="form-check-label" for="type-oily">
+                                    Feels oily within a few hours
+                                </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="skin_type" value="dry" id="type-dry">
-                                <label class="form-check-label" for="type-dry">Dry</label>
+                                <label class="form-check-label" for="type-dry">
+                                    Feels tight and dry
+                                </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="skin_type" value="combination" id="type-combination">
-                                <label class="form-check-label" for="type-combination">Combination</label>
+                                <label class="form-check-label" for="type-combination">
+                                    Oily in T-zone, dry elsewhere
+                                </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="skin_type" value="normal" id="type-normal">
-                                <label class="form-check-label" for="type-normal">Normal</label>
+                                <label class="form-check-label" for="type-normal">
+                                    Feels comfortable and balanced
+                                </label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Is your skin sensitive?</label>
-                        <div class="d-flex gap-3">
+                    <!-- Step 2: Sensitivity -->
+                    <div class="quiz-step" data-step="2" style="display: none;">
+                        <h4>How does your skin react to new products?</h4>
+                        <div class="d-flex flex-column gap-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="sensitivity" value="sensitive" id="sensitive-yes" required>
-                                <label class="form-check-label" for="sensitive-yes">Yes</label>
+                                <label class="form-check-label" for="sensitive-yes">
+                                    Often becomes red, itchy, or irritated
+                                </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="sensitivity" value="not-sensitive" id="sensitive-no">
-                                <label class="form-check-label" for="sensitive-no">No</label>
+                                <label class="form-check-label" for="sensitive-no">
+                                    Rarely has negative reactions
+                                </label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">What are your skin concerns? (Select all that apply)</label>
-                        <div class="d-flex gap-3 flex-wrap">
+                    <!-- Step 3: Concerns -->
+                    <div class="quiz-step" data-step="3" style="display: none;">
+                        <h4>What are your main skin concerns?</h4>
+                        <div class="d-flex flex-column gap-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="concerns" value="acne" id="concern-acne">
-                                <label class="form-check-label" for="concern-acne">Acne</label>
+                                <label class="form-check-label" for="concern-acne">
+                                    Breakouts and acne
+                                </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="concerns" value="aging" id="concern-aging">
-                                <label class="form-check-label" for="concern-aging">Aging</label>
+                                <label class="form-check-label" for="concern-aging">
+                                    Fine lines and wrinkles
+                                </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="concerns" value="pigmentation" id="concern-pigmentation">
-                                <label class="form-check-label" for="concern-pigmentation">Pigmentation</label>
+                                <label class="form-check-label" for="concern-pigmentation">
+                                    Dark spots and uneven tone
+                                </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="concerns" value="dryness" id="concern-dryness">
-                                <label class="form-check-label" for="concern-dryness">Dryness</label>
+                                <label class="form-check-label" for="concern-dryness">
+                                    Dryness and flakiness
+                                </label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-4">
+                    <!-- Step 4: Location -->
+                    <div class="quiz-step" data-step="4" style="display: none;">
+                        <h4>Location Detection</h4>
                         <div id="location-status" class="alert alert-info">
                             Detecting your location...
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
-                        Get Recommendations
-                    </button>
+                    <div class="mt-4 d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                            <i class="bi bi-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextBtn">
+                            Next <i class="bi bi-arrow-right"></i>
+                        </button>
+                        <button type="submit" class="btn btn-success" id="submit-btn" style="display: none;">
+                            Get Recommendations <i class="bi bi-check2"></i>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -88,4 +124,5 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/location.js') }}"></script>
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
 {% endblock %}
