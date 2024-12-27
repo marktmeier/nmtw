@@ -2,48 +2,29 @@ import os
 import requests
 from flask import current_app
 
-OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY", "YOUR_API_KEY")
+WEATHERAPI_KEY = os.environ.get("WEATHERAPI_KEY", "YOUR_API_KEY")
 
 def get_weather_data(lat, lon):
-    """Fetch weather data from OpenWeather API"""
+    """Fetch weather data from WeatherAPI.com"""
     try:
-        url = f"https://api.openweathermap.org/data/2.5/weather"
+        url = "http://api.weatherapi.com/v1/current.json"
         params = {
-            "lat": lat,
-            "lon": lon,
-            "appid": OPENWEATHER_API_KEY,
-            "units": "metric"
+            "key": WEATHERAPI_KEY,
+            "q": f"{lat},{lon}",
+            "aqi": "yes"  # Include air quality data
         }
-        
+
         response = requests.get(url, params=params)
         response.raise_for_status()
-        
+
         data = response.json()
-        
+
         return {
-            "temperature": round(data["main"]["temp"]),
-            "humidity": data["main"]["humidity"],
-            "description": data["weather"][0]["description"],
-            "uv_index": get_uv_index(lat, lon)
+            "temperature": round(data["current"]["temp_c"]),
+            "humidity": data["current"]["humidity"],
+            "description": data["current"]["condition"]["text"],
+            "uv_index": data["current"]["uv"]
         }
     except Exception as e:
         current_app.logger.error(f"Weather API error: {str(e)}")
-        return None
-
-def get_uv_index(lat, lon):
-    """Fetch UV index data from OpenWeather API"""
-    try:
-        url = f"https://api.openweathermap.org/data/2.5/uvi"
-        params = {
-            "lat": lat,
-            "lon": lon,
-            "appid": OPENWEATHER_API_KEY
-        }
-        
-        response = requests.get(url, params=params)
-        response.raise_for_status()
-        
-        data = response.json()
-        return round(data["value"], 1)
-    except:
         return None
