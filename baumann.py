@@ -16,10 +16,12 @@ Weather modifiers adjust the effective skin behavior based on:
 from typing import Dict, Tuple, Optional
 from dataclasses import dataclass
 
-# Turkish city climate profiles (average conditions)
+# Turkish city climate profiles with coordinates for live weather
 TURKISH_CITIES = {
     "ankara": {
         "name": "Ankara",
+        "lat": 39.9334,
+        "lon": 32.8597,
         "climate": "continental_dry",
         "avg_humidity": 55,
         "avg_temp_summer": 30,
@@ -28,6 +30,8 @@ TURKISH_CITIES = {
     },
     "istanbul": {
         "name": "İstanbul", 
+        "lat": 41.0082,
+        "lon": 28.9784,
         "climate": "humid_maritime",
         "avg_humidity": 73,
         "avg_temp_summer": 27,
@@ -36,6 +40,8 @@ TURKISH_CITIES = {
     },
     "izmir": {
         "name": "İzmir",
+        "lat": 38.4237,
+        "lon": 27.1428,
         "climate": "mediterranean",
         "avg_humidity": 62,
         "avg_temp_summer": 33,
@@ -44,6 +50,8 @@ TURKISH_CITIES = {
     },
     "antalya": {
         "name": "Antalya",
+        "lat": 36.8969,
+        "lon": 30.7133,
         "climate": "mediterranean_coastal",
         "avg_humidity": 64,
         "avg_temp_summer": 34,
@@ -52,6 +60,8 @@ TURKISH_CITIES = {
     },
     "bursa": {
         "name": "Bursa",
+        "lat": 40.1885,
+        "lon": 29.0610,
         "climate": "transitional",
         "avg_humidity": 68,
         "avg_temp_summer": 29,
@@ -60,6 +70,8 @@ TURKISH_CITIES = {
     },
     "adana": {
         "name": "Adana",
+        "lat": 37.0000,
+        "lon": 35.3213,
         "climate": "mediterranean_hot",
         "avg_humidity": 66,
         "avg_temp_summer": 35,
@@ -68,6 +80,8 @@ TURKISH_CITIES = {
     },
     "gaziantep": {
         "name": "Gaziantep",
+        "lat": 37.0662,
+        "lon": 37.3833,
         "climate": "continental",
         "avg_humidity": 52,
         "avg_temp_summer": 32,
@@ -76,11 +90,53 @@ TURKISH_CITIES = {
     },
     "konya": {
         "name": "Konya",
+        "lat": 37.8746,
+        "lon": 32.4932,
         "climate": "continental_dry",
         "avg_humidity": 50,
         "avg_temp_summer": 30,
         "avg_temp_winter": 0,
         "notes": "Very dry, extreme temps"
+    },
+    "diyarbakir": {
+        "name": "Diyarbakır",
+        "lat": 37.9144,
+        "lon": 40.2306,
+        "climate": "continental_hot",
+        "avg_humidity": 45,
+        "avg_temp_summer": 38,
+        "avg_temp_winter": 2,
+        "notes": "Very hot dry summers"
+    },
+    "trabzon": {
+        "name": "Trabzon",
+        "lat": 41.0027,
+        "lon": 39.7168,
+        "climate": "humid_subtropical",
+        "avg_humidity": 78,
+        "avg_temp_summer": 26,
+        "avg_temp_winter": 8,
+        "notes": "Very humid Black Sea coast"
+    },
+    "samsun": {
+        "name": "Samsun",
+        "lat": 41.2867,
+        "lon": 36.33,
+        "climate": "humid_subtropical",
+        "avg_humidity": 75,
+        "avg_temp_summer": 26,
+        "avg_temp_winter": 7,
+        "notes": "Humid Black Sea climate"
+    },
+    "mersin": {
+        "name": "Mersin",
+        "lat": 36.8121,
+        "lon": 34.6415,
+        "climate": "mediterranean_coastal",
+        "avg_humidity": 68,
+        "avg_temp_summer": 33,
+        "avg_temp_winter": 11,
+        "notes": "Hot Mediterranean coast"
     }
 }
 

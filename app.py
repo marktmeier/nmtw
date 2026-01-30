@@ -80,22 +80,37 @@ def quiz_result():
         # Calculate base Baumann score
         base_score = calculate_baumann_from_quiz(answers)
         
-        # Get real weather data for the city (or use defaults)
+        # Try to get LIVE weather data using city coordinates
         weather_data = None
-        lat = request.form.get("latitude")
-        lon = request.form.get("longitude")
+        is_live = False
+        
+        # Use city coordinates for weather
+        lat = city_data.get("lat")
+        lon = city_data.get("lon")
         
         if lat and lon:
             weather_data = get_weather_data(lat, lon)
+            if weather_data:
+                is_live = True
+                logger.info(f"Got live weather for {city_data['name']}: {weather_data}")
         
-        # If no real weather, use city defaults
+        # If no live weather, use city seasonal defaults
         if not weather_data:
+            import datetime
+            month = datetime.datetime.now().month
+            is_summer = month in [5, 6, 7, 8, 9]  # May-September
+            
             weather_data = {
-                "temperature": city_data.get("avg_temp_summer", 25),
+                "temperature": city_data.get("avg_temp_summer" if is_summer else "avg_temp_winter", 20),
                 "humidity": city_data.get("avg_humidity", 60),
-                "uv_index": 5,
-                "location": {"city": city_data["name"], "country": "Türkiye"}
+                "uv_index": 7 if is_summer else 3,
+                "description": "Tahmini (ortalama)" if not is_live else "",
+                "location": {"city": city_data["name"], "region": "", "country": "Türkiye"}
             }
+            logger.info(f"Using default weather for {city_data['name']}: {weather_data}")
+        
+        # Add live indicator to weather data
+        weather_data["is_live"] = is_live
         
         # Create WeatherData object
         weather = WeatherData(
@@ -116,7 +131,8 @@ def quiz_result():
             adjusted_score=adjusted_score,
             weather=weather_data,
             city=city_data,
-            priorities=priorities
+            priorities=priorities,
+            is_live_weather=is_live
         )
         
     except Exception as e:

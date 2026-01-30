@@ -18,15 +18,38 @@
             
             <div class="card-body">
                 <!-- Weather Info -->
-                <div class="alert alert-info d-flex align-items-center mb-4">
-                    <i class="bi bi-cloud-sun fs-3 me-3"></i>
+                <div class="alert {% if is_live_weather %}alert-success{% else %}alert-info{% endif %} d-flex align-items-center mb-4">
+                    <i class="bi {% if is_live_weather %}bi-broadcast{% else %}bi-cloud-sun{% endif %} fs-3 me-3"></i>
                     <div>
-                        <strong>{{ city.name }} Hava Durumu:</strong>
-                        {{ weather.temperature }}°C | 
+                        <strong>{{ city.name }} Hava Durumu 
+                            {% if is_live_weather %}
+                            <span class="badge bg-success ms-2">
+                                <i class="bi bi-wifi"></i> Canlı
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary ms-2">
+                                <i class="bi bi-clock"></i> Tahmini
+                            </span>
+                            {% endif %}
+                        </strong>
+                        <br>
+                        <span class="fs-5">{{ weather.temperature }}°C</span> | 
                         Nem: {{ weather.humidity }}% |
                         UV: {{ weather.uv_index }}
+                        {% if weather.description %}
+                        | {{ weather.description }}
+                        {% endif %}
                     </div>
                 </div>
+                
+                {% if not is_live_weather %}
+                <div class="alert alert-warning small">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Canlı hava verisi alınamadı.</strong> 
+                    Mevsimsel ortalama değerler kullanılıyor. 
+                    Daha doğru sonuçlar için API anahtarı ekleyin.
+                </div>
+                {% endif %}
                 
                 <!-- Base vs Adjusted Comparison -->
                 <div class="row mb-4">
