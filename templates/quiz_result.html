@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        
+        <!-- Main Result Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white text-center py-4">
+                <h2 class="mb-2">
+                    <i class="bi bi-person-badge"></i>
+                    Cilt Tipiniz: <strong>{{ adjusted_score.get_code() }}</strong>
+                </h2>
+                <p class="mb-0 opacity-75">
+                    {{ city.name }} hava koşullarına göre ayarlanmış
+                </p>
+            </div>
+            
+            <div class="card-body">
+                <!-- Weather Info -->
+                <div class="alert alert-info d-flex align-items-center mb-4">
+                    <i class="bi bi-cloud-sun fs-3 me-3"></i>
+                    <div>
+                        <strong>{{ city.name }} Hava Durumu:</strong>
+                        {{ weather.temperature }}°C | 
+                        Nem: {{ weather.humidity }}% |
+                        UV: {{ weather.uv_index }}
+                    </div>
+                </div>
+                
+                <!-- Base vs Adjusted Comparison -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-person"></i> Temel Cilt Tipiniz
+                                </h6>
+                                <h3 class="text-primary">{{ base_score.get_code() }}</h3>
+                                <p class="small mb-0">
+                                    Genetik ve kalıcı cilt özellikleriniz
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h6 class="opacity-75 mb-3">
+                                    <i class="bi bi-cloud-sun"></i> Bugünkü Etkili Tipiniz
+                                </h6>
+                                <h3>{{ adjusted_score.get_code() }}</h3>
+                                <p class="small mb-0">
+                                    {{ city.name }} havasına göre cildiniz böyle davranıyor
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Axis Breakdown -->
+                <h5 class="mb-3"><i class="bi bi-bar-chart"></i> Detaylı Analiz</h5>
+                <div class="row g-3 mb-4">
+                    <!-- Oily/Dry -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Kuru</span>
+                                    <span>Yağlı</span>
+                                </div>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar {% if adjusted_score.oily < 50 %}bg-info{% else %}bg-warning{% endif %}" 
+                                         style="width: {{ adjusted_score.oily }}%">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>Temel: {{ base_score.oily }}</span>
+                                    <span class="fw-bold">Bugün: {{ adjusted_score.oily }}</span>
+                                </div>
+                                {% if adjusted_score.oily != base_score.oily %}
+                                <small class="text-{{ 'danger' if adjusted_score.oily > base_score.oily else 'success' }}">
+                                    {% if adjusted_score.oily > base_score.oily %}
+                                    <i class="bi bi-arrow-up"></i> Nem nedeniyle daha yağlı
+                                    {% else %}
+                                    <i class="bi bi-arrow-down"></i> Kuru hava nedeniyle daha az yağlı
+                                    {% endif %}
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sensitive/Resistant -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Dayanıklı</span>
+                                    <span>Hassas</span>
+                                </div>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar {% if adjusted_score.sensitive < 50 %}bg-success{% else %}bg-danger{% endif %}" 
+                                         style="width: {{ adjusted_score.sensitive }}%">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>Temel: {{ base_score.sensitive }}</span>
+                                    <span class="fw-bold">Bugün: {{ adjusted_score.sensitive }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pigmented -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Lekesiz</span>
+                                    <span>Lekeye Yatkın</span>
+                                </div>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-dark" 
+                                         style="width: {{ adjusted_score.pigmented }}%">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>Temel: {{ base_score.pigmented }}</span>
+                                    <span class="fw-bold">Bugün: {{ adjusted_score.pigmented }}</span>
+                                </div>
+                                {% if weather.uv_index >= 5 %}
+                                <small class="text-warning">
+                                    <i class="bi bi-sun"></i> Yüksek UV - Güneş koruması şart!
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Wrinkle -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Sıkı</span>
+                                    <span>Kırışıklığa Yatkın</span>
+                                </div>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-secondary" 
+                                         style="width: {{ adjusted_score.wrinkle }}%">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>Temel: {{ base_score.wrinkle }}</span>
+                                    <span class="fw-bold">Bugün: {{ adjusted_score.wrinkle }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Priorities -->
+                {% if priorities %}
+                <h5 class="mb-3"><i class="bi bi-exclamation-triangle"></i> Öncelikli Bakım Önerileri</h5>
+                <div class="list-group mb-4">
+                    {% for p in priorities %}
+                    <div class="list-group-item list-group-item-{{ 'danger' if p.priority == 'high' else 'warning' }}">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>{{ p.recommendation_tr }}</strong>
+                                <br>
+                                <small class="text-muted">{{ p.recommendation_en }}</small>
+                            </div>
+                            <span class="badge bg-{{ 'danger' if p.priority == 'high' else 'warning' }}">
+                                {{ 'Yüksek' if p.priority == 'high' else 'Orta' }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- CTA: Build Routine -->
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body text-center py-4">
+                <h4><i class="bi bi-magic"></i> Kişiselleştirilmiş Rutin Oluştur</h4>
+                <p>Cilt tipinize ve {{ city.name }} havasına uygun ürünlerle rutin oluşturun</p>
+                <a href="{{ url_for('routine_builder') }}" class="btn btn-light btn-lg">
+                    <i class="bi bi-plus-circle"></i> Rutin Oluştur
+                </a>
+            </div>
+        </div>
+        
+        <!-- Share -->
+        <div class="text-center">
+            <p class="text-muted">Sonuçlarını arkadaşlarınla paylaş</p>
+            <button class="btn btn-outline-primary me-2" onclick="shareResult()">
+                <i class="bi bi-share"></i> Paylaş
+            </button>
+            <a href="{{ url_for('quiz') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-repeat"></i> Tekrar Test Et
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function shareResult() {
+    const text = `Baumann cilt tipim: {{ adjusted_score.get_code() }} ({{ city.name }} havasına göre ayarlanmış). Sen de öğren: `;
+    if (navigator.share) {
+        navigator.share({
+            title: 'Cilt Tipi Sonucum',
+            text: text,
+            url: window.location.origin
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(text + window.location.origin);
+        alert('Link kopyalandı!');
+    }
+}
+</script>
+{% endblock %}

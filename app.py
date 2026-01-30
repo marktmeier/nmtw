@@ -1,6 +1,10 @@
 import os
 import logging
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, flash, redirect, url_for
+
+# Load environment variables
+load_dotenv()
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from datetime import datetime
@@ -14,7 +18,7 @@ app = Flask(__name__)
 
 # Configure app
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev_key_123")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///skincare.db")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
@@ -40,6 +44,85 @@ with app.app_context():
 def index():
     logger.debug("Rendering index page")
     return render_template("index.html")
+
+
+@app.route("/quiz", methods=["GET"])
+def quiz():
+    """Baumann skin type quiz with Turkish city selection"""
+    from baumann import BAUMANN_QUIZ, TURKISH_CITIES
+    return render_template("quiz.html", questions=BAUMANN_QUIZ, cities=TURKISH_CITIES)
+
+
+@app.route("/quiz/result", methods=["POST"])
+def quiz_result():
+    """Process quiz and show results with weather-adjusted skin type"""
+    from baumann import (
+        calculate_baumann_from_quiz, 
+        apply_weather_modifier, 
+        get_skincare_priorities,
+        WeatherData,
+        TURKISH_CITIES
+    )
+    from weather import get_weather_data
+    
+    try:
+        # Collect quiz answers
+        answers = {}
+        for i in range(1, 7):
+            q_key = f"q{i}"
+            if q_key in request.form:
+                answers[i] = int(request.form[q_key])
+        
+        # Get selected city
+        city = request.form.get("city", "istanbul")
+        city_data = TURKISH_CITIES.get(city, TURKISH_CITIES["istanbul"])
+        
+        # Calculate base Baumann score
+        base_score = calculate_baumann_from_quiz(answers)
+        
+        # Get real weather data for the city (or use defaults)
+        weather_data = None
+        lat = request.form.get("latitude")
+        lon = request.form.get("longitude")
+        
+        if lat and lon:
+            weather_data = get_weather_data(lat, lon)
+        
+        # If no real weather, use city defaults
+        if not weather_data:
+            weather_data = {
+                "temperature": city_data.get("avg_temp_summer", 25),
+                "humidity": city_data.get("avg_humidity", 60),
+                "uv_index": 5,
+                "location": {"city": city_data["name"], "country": "Türkiye"}
+            }
+        
+        # Create WeatherData object
+        weather = WeatherData(
+            humidity=weather_data.get("humidity", 60),
+            temperature=weather_data.get("temperature", 20),
+            uv_index=weather_data.get("uv_index", 5),
+            city=city
+        )
+        
+        # Apply weather modifier to get adjusted score
+        adjusted_score = apply_weather_modifier(base_score, weather)
+        
+        # Get skincare priorities
+        priorities = get_skincare_priorities(adjusted_score, weather)
+        
+        return render_template("quiz_result.html",
+            base_score=base_score,
+            adjusted_score=adjusted_score,
+            weather=weather_data,
+            city=city_data,
+            priorities=priorities
+        )
+        
+    except Exception as e:
+        logger.error(f"Quiz error: {str(e)}", exc_info=True)
+        flash("Bir hata oluştu. Lütfen tekrar deneyin.", "error")
+        return redirect(url_for("quiz"))
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
@@ -102,6 +185,12 @@ def recommend():
         logger.error(f"Error generating recommendation: {str(e)}", exc_info=True)
         flash("An error occurred. Please try again.", "error")
         return redirect(url_for("index"))
+
+@app.route("/routine-builder")
+def routine_builder():
+    """Drag and drop routine builder (TODO: implement)"""
+    return render_template("routine_builder.html")
+
 
 @app.route("/mood-tracker")
 def mood_tracker():

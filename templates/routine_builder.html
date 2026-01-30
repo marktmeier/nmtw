@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="bi bi-magic"></i> 
+                    Rutin Oluşturucu
+                </h3>
+                <p class="mb-0 opacity-75">Sürükle-bırak ile kişisel bakım rutininizi oluşturun</p>
+            </div>
+            
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h5><i class="bi bi-tools"></i> Yapım Aşamasında</h5>
+                    <p class="mb-0">
+                        Rutin oluşturucu yakında aktif olacak! Özellikler:
+                    </p>
+                    <ul class="mt-2 mb-0">
+                        <li>Trendyol ve Hepsiburada'dan ürün seçimi</li>
+                        <li>Sürükle-bırak rutin düzenleme</li>
+                        <li>Rutinini kaydet ve paylaş</li>
+                        <li>Benzer cilt tiplerine sahip kişilerin rutinlerini keşfet</li>
+                    </ul>
+                </div>
+                
+                <!-- Preview of what's coming -->
+                <h5 class="mt-4 mb-3">Örnek Rutin Adımları</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="display-4 text-primary mb-2">1</div>
+                                <h6>Temizleyici</h6>
+                                <p class="small text-muted">Sabah & Akşam</p>
+                                <div class="border-2 border-dashed rounded p-3 bg-light">
+                                    <i class="bi bi-plus-circle text-muted"></i>
+                                    <p class="small text-muted mb-0">Ürün ekle</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="display-4 text-primary mb-2">2</div>
+                                <h6>Tonik</h6>
+                                <p class="small text-muted">Sabah & Akşam</p>
+                                <div class="border-2 border-dashed rounded p-3 bg-light">
+                                    <i class="bi bi-plus-circle text-muted"></i>
+                                    <p class="small text-muted mb-0">Ürün ekle</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="display-4 text-primary mb-2">3</div>
+                                <h6>Serum</h6>
+                                <p class="small text-muted">Akşam</p>
+                                <div class="border-2 border-dashed rounded p-3 bg-light">
+                                    <i class="bi bi-plus-circle text-muted"></i>
+                                    <p class="small text-muted mb-0">Ürün ekle</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="display-4 text-primary mb-2">4</div>
+                                <h6>Nemlendirici</h6>
+                                <p class="small text-muted">Sabah & Akşam</p>
+                                <div class="border-2 border-dashed rounded p-3 bg-light">
+                                    <i class="bi bi-plus-circle text-muted"></i>
+                                    <p class="small text-muted mb-0">Ürün ekle</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="display-4 text-primary mb-2">5</div>
+                                <h6>Güneş Koruma</h6>
+                                <p class="small text-muted">Sabah</p>
+                                <div class="border-2 border-dashed rounded p-3 bg-light">
+                                    <i class="bi bi-plus-circle text-muted"></i>
+                                    <p class="small text-muted mb-0">Ürün ekle</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="display-4 text-primary mb-2">6</div>
+                                <h6>Özel Bakım</h6>
+                                <p class="small text-muted">Haftalık</p>
+                                <div class="border-2 border-dashed rounded p-3 bg-light">
+                                    <i class="bi bi-plus-circle text-muted"></i>
+                                    <p class="small text-muted mb-0">Ürün ekle</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('quiz') }}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Önce Cilt Tipini Öğren
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

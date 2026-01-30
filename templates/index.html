@@ -1,128 +1,127 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="mb-0">Skin Type Quiz</h3>
-                <div class="progress mt-2" style="height: 10px;">
-                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
+<!-- Hero Section -->
+<div class="row justify-content-center mb-5">
+    <div class="col-lg-10 text-center">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="bi bi-cloud-sun text-primary"></i>
+            No Matter The Weather
+        </h1>
+        <p class="lead text-muted mb-4">
+            Hava ne olursa olsun, cildinize en uygun bakımı keşfedin.
+            <br>
+            <strong>Ankara'nın kurak havasında yağlı cilt, normal cilt gibi davranır.</strong>
+        </p>
+        <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-lg px-5">
+            <i class="bi bi-clipboard2-pulse"></i> 
+            Cilt Tipimi Öğren
+        </a>
+    </div>
+</div>
+
+<!-- How it works -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card h-100 text-center border-0 bg-light">
             <div class="card-body">
-                <form id="skinQuizForm" action="{{ url_for('recommend') }}" method="POST">
-                    <input type="hidden" name="latitude" id="latitude">
-                    <input type="hidden" name="longitude" id="longitude">
-
-                    <!-- Step 1: Skin Type -->
-                    <div class="quiz-step" data-step="1">
-                        <h4>How does your skin feel after cleansing?</h4>
-                        <div class="d-flex flex-column gap-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="skin_type" value="oily" id="type-oily" required>
-                                <label class="form-check-label" for="type-oily">
-                                    Feels oily within a few hours
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="skin_type" value="dry" id="type-dry">
-                                <label class="form-check-label" for="type-dry">
-                                    Feels tight and dry
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="skin_type" value="combination" id="type-combination">
-                                <label class="form-check-label" for="type-combination">
-                                    Oily in T-zone, dry elsewhere
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="skin_type" value="normal" id="type-normal">
-                                <label class="form-check-label" for="type-normal">
-                                    Feels comfortable and balanced
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Sensitivity -->
-                    <div class="quiz-step" data-step="2" style="display: none;">
-                        <h4>How does your skin react to new products?</h4>
-                        <div class="d-flex flex-column gap-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="sensitivity" value="sensitive" id="sensitive-yes" required>
-                                <label class="form-check-label" for="sensitive-yes">
-                                    Often becomes red, itchy, or irritated
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="sensitivity" value="not-sensitive" id="sensitive-no">
-                                <label class="form-check-label" for="sensitive-no">
-                                    Rarely has negative reactions
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Concerns -->
-                    <div class="quiz-step" data-step="3" style="display: none;">
-                        <h4>What are your main skin concerns?</h4>
-                        <div class="d-flex flex-column gap-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="concerns" value="acne" id="concern-acne">
-                                <label class="form-check-label" for="concern-acne">
-                                    Breakouts and acne
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="concerns" value="aging" id="concern-aging">
-                                <label class="form-check-label" for="concern-aging">
-                                    Fine lines and wrinkles
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="concerns" value="pigmentation" id="concern-pigmentation">
-                                <label class="form-check-label" for="concern-pigmentation">
-                                    Dark spots and uneven tone
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="concerns" value="dryness" id="concern-dryness">
-                                <label class="form-check-label" for="concern-dryness">
-                                    Dryness and flakiness
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 4: Location -->
-                    <div class="quiz-step" data-step="4" style="display: none;">
-                        <h4>Location Detection</h4>
-                        <div id="location-status" class="alert alert-info">
-                            Detecting your location...
-                        </div>
-                    </div>
-
-                    <div class="mt-4 d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
-                            <i class="bi bi-arrow-left"></i> Previous
-                        </button>
-                        <button type="button" class="btn btn-primary" id="nextBtn">
-                            Next <i class="bi bi-arrow-right"></i>
-                        </button>
-                        <button type="submit" class="btn btn-success" id="submit-btn" style="display: none;">
-                            Get Recommendations <i class="bi bi-check2"></i>
-                        </button>
-                    </div>
-                </form>
+                <div class="display-4 text-primary mb-3">1</div>
+                <h5>Baumann Testi</h5>
+                <p class="text-muted">
+                    6 soruluk bilimsel testle 16 cilt tipinden hangisi olduğunuzu belirleyin.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 text-center border-0 bg-light">
+            <div class="card-body">
+                <div class="display-4 text-primary mb-3">2</div>
+                <h5>Hava Ayarlaması</h5>
+                <p class="text-muted">
+                    Şehrinizin nem ve sıcaklığına göre cildinizin gerçekte nasıl davrandığını öğrenin.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 text-center border-0 bg-light">
+            <div class="card-body">
+                <div class="display-4 text-primary mb-3">3</div>
+                <h5>Kişisel Rutin</h5>
+                <p class="text-muted">
+                    Trendyol ve Hepsiburada'dan size özel ürünlerle rutin oluşturun.
+                </p>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/location.js') }}"></script>
-<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+<!-- Climate comparison -->
+<div class="card bg-dark text-white mb-5">
+    <div class="card-body p-4">
+        <h4 class="mb-4 text-center">
+            <i class="bi bi-thermometer-half"></i> 
+            Aynı Cilt, Farklı İklim = Farklı Bakım
+        </h4>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="bg-secondary rounded p-3">
+                    <h6><i class="bi bi-building"></i> Ankara - Kuru İklim</h6>
+                    <ul class="small mb-0">
+                        <li>Nem: ~55% (kış: ~50%)</li>
+                        <li>Yağlı cilt → Normal gibi davranır</li>
+                        <li>Nemlendirme öncelikli</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="bg-secondary rounded p-3">
+                    <h6><i class="bi bi-water"></i> İstanbul - Nemli İklim</h6>
+                    <ul class="small mb-0">
+                        <li>Nem: ~73%</li>
+                        <li>Normal cilt → Yağlı gibi davranır</li>
+                        <li>Hafif ürünler öncelikli</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Social proof / features -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4 text-center">
+        <i class="bi bi-people display-4 text-primary"></i>
+        <h5 class="mt-2">Topluluk</h5>
+        <p class="text-muted small">
+            Benzer cilt tipine sahip kişilerin rutinlerini keşfet
+        </p>
+    </div>
+    <div class="col-md-4 text-center">
+        <i class="bi bi-bag-check display-4 text-primary"></i>
+        <h5 class="mt-2">Türkiye Marketleri</h5>
+        <p class="text-muted small">
+            Trendyol ve Hepsiburada'dan doğrudan ürün önerileri
+        </p>
+    </div>
+    <div class="col-md-4 text-center">
+        <i class="bi bi-share display-4 text-primary"></i>
+        <h5 class="mt-2">Paylaş</h5>
+        <p class="text-muted small">
+            Rutinini paylaş, beğeni ve yorum al
+        </p>
+    </div>
+</div>
+
+<!-- CTA -->
+<div class="text-center">
+    <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-lg px-5">
+        <i class="bi bi-arrow-right-circle"></i> 
+        Teste Başla - Ücretsiz
+    </a>
+    <p class="text-muted small mt-2">
+        2 dakika sürer • Kayıt gerektirmez
+    </p>
+</div>
 {% endblock %}

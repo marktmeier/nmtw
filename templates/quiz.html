@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="bi bi-clipboard2-pulse"></i> 
+                    Baumann Cilt Tipi Testi
+                </h3>
+                <p class="mb-0 opacity-75">6 soru ile gerçek cilt tipinizi keşfedin</p>
+            </div>
+            
+            <div class="card-body">
+                <!-- Progress bar -->
+                <div class="progress mb-4" style="height: 8px;">
+                    <div class="progress-bar bg-success" id="progressBar" role="progressbar" 
+                         style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                
+                <form id="baumannQuiz" action="{{ url_for('quiz_result') }}" method="POST">
+                    <input type="hidden" name="city" id="cityInput" value="">
+                    <input type="hidden" name="latitude" id="latitude" value="">
+                    <input type="hidden" name="longitude" id="longitude" value="">
+                    
+                    {% for question in questions %}
+                    <div class="quiz-step" data-step="{{ loop.index }}" {% if loop.index > 1 %}style="display: none;"{% endif %}>
+                        <h5 class="mb-4">
+                            <span class="badge bg-secondary me-2">{{ loop.index }}/{{ questions|length }}</span>
+                            {{ question.question }}
+                        </h5>
+                        
+                        <div class="d-grid gap-2">
+                            {% for answer in question.answers %}
+                            <div class="form-check quiz-answer">
+                                <input class="form-check-input" type="radio" 
+                                       name="q{{ question.id }}" 
+                                       id="q{{ question.id }}_{{ loop.index }}"
+                                       value="{{ answer.score }}" required>
+                                <label class="form-check-label w-100 p-3 border rounded" 
+                                       for="q{{ question.id }}_{{ loop.index }}">
+                                    {{ answer.text }}
+                                    <small class="d-block text-muted">{{ answer.text_en }}</small>
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- City selection step -->
+                    <div class="quiz-step" data-step="{{ questions|length + 1 }}" style="display: none;">
+                        <h5 class="mb-4">
+                            <span class="badge bg-secondary me-2">Konum</span>
+                            Hangi şehirde yaşıyorsunuz?
+                        </h5>
+                        
+                        <div class="row g-3">
+                            {% for city_id, city in cities.items() %}
+                            <div class="col-6 col-md-4">
+                                <div class="form-check city-card">
+                                    <input class="form-check-input" type="radio" 
+                                           name="city_select" 
+                                           id="city_{{ city_id }}"
+                                           value="{{ city_id }}" required
+                                           onchange="document.getElementById('cityInput').value='{{ city_id }}'">
+                                    <label class="form-check-label card h-100" for="city_{{ city_id }}">
+                                        <div class="card-body text-center">
+                                            <h6 class="mb-1">{{ city.name }}</h6>
+                                            <small class="text-muted">
+                                                {% if city.climate == 'continental_dry' %}🏜️ Kuru
+                                                {% elif city.climate == 'humid_maritime' %}🌊 Nemli
+                                                {% elif city.climate == 'mediterranean' %}☀️ Akdeniz
+                                                {% elif city.climate == 'mediterranean_coastal' %}🏖️ Sahil
+                                                {% else %}🌤️ Karma
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Neden şehir?</strong> Hava koşulları cilt tipinizi etkiler. 
+                            Ankara'nın kurak havası ile İstanbul'un nemli havası farklı bakım gerektirir.
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary" id="prevBtn" style="display: none;">
+                            <i class="bi bi-arrow-left"></i> Geri
+                        </button>
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-primary" id="nextBtn">
+                                İleri <i class="bi bi-arrow-right"></i>
+                            </button>
+                            <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                                <i class="bi bi-check2-circle"></i> Sonuçları Gör
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.quiz-answer .form-check-label {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.quiz-answer .form-check-input:checked + .form-check-label {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+.quiz-answer .form-check-input:checked + .form-check-label .text-muted {
+    color: rgba(255,255,255,0.8) !important;
+}
+.quiz-answer .form-check-input {
+    display: none;
+}
+.city-card .form-check-input {
+    display: none;
+}
+.city-card .card {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.city-card .form-check-input:checked + .card {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const steps = document.querySelectorAll('.quiz-step');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    let currentStep = 1;
+    const totalSteps = steps.length;
+    
+    function updateUI() {
+        // Show/hide steps
+        steps.forEach(step => {
+            step.style.display = parseInt(step.dataset.step) === currentStep ? 'block' : 'none';
+        });
+        
+        // Update progress
+        const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        progressBar.style.width = progress + '%';
+        
+        // Update buttons
+        prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+        nextBtn.style.display = currentStep < totalSteps ? 'block' : 'none';
+        submitBtn.style.display = currentStep === totalSteps ? 'block' : 'none';
+    }
+    
+    function validateStep() {
+        const currentStepEl = document.querySelector(`[data-step="${currentStep}"]`);
+        const radios = currentStepEl.querySelectorAll('input[type="radio"]');
+        return Array.from(radios).some(r => r.checked);
+    }
+    
+    nextBtn.addEventListener('click', () => {
+        if (!validateStep()) {
+            alert('Lütfen bir seçenek seçin');
+            return;
+        }
+        currentStep++;
+        updateUI();
+    });
+    
+    prevBtn.addEventListener('click', () => {
+        currentStep--;
+        updateUI();
+    });
+    
+    document.getElementById('baumannQuiz').addEventListener('submit', (e) => {
+        if (!validateStep()) {
+            e.preventDefault();
+            alert('Lütfen şehrinizi seçin');
+        }
+    });
+    
+    updateUI();
+});
+</script>
+{% endblock %}
